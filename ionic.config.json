@@ -1,0 +1,7 @@
+{
+  "name": "GreenTrack-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
