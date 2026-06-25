@@ -1,0 +1,607 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GreenTrack ERP Mobile Attendance API",
+    "description": "API documentation and specifications for the GreenTrack Attendance mobile client. All endpoints require a Bearer token in the Authorization header, except for the login endpoint.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Local Mock Interceptor Server"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Authenticate User",
+        "description": "Logs in the employee and returns a JWT session token and user details.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "johntom@gmail.com",
+                    "description": "Employee email address or username code."
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123",
+                    "description": "User password."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "mock-jwt-token-12345"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/UserProfile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Get User Profile Details",
+        "description": "Fetches profile information for the authenticated employee.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance/config": {
+      "get": {
+        "summary": "Get Attendance Configuration",
+        "description": "Retrieves the shift schedule parameters, permitted geofence circles, and accuracy thresholds.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration loaded successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceConfig"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance/today": {
+      "get": {
+        "summary": "Get Today's Attendance Record",
+        "description": "Returns the user's check-in/out timestamps and status for the current date.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current day record fetched.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance/mark": {
+      "post": {
+        "summary": "Mark Attendance Check-In / Check-Out",
+        "description": "Submits a new check-in or check-out log with GPS coordinates and a verification selfie.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "timestamp",
+                  "location",
+                  "gpsStatus"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "check_in",
+                      "check_out"
+                    ],
+                    "example": "check_in"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-06-17T09:05:00.000Z",
+                    "description": "ISO 8601 formatted action timestamp."
+                  },
+                  "selfie": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "data:image/jpeg;base64,iVBORw...",
+                    "description": "Base64-encoded image string representing captured selfie."
+                  },
+                  "location": {
+                    "$ref": "#/components/schemas/Location"
+                  },
+                  "gpsStatus": {
+                    "type": "string",
+                    "enum": [
+                      "success",
+                      "failed"
+                    ],
+                    "example": "success"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Check-in/out registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Check-in recorded successfully at 09:05 AM."
+                    },
+                    "record": {
+                      "$ref": "#/components/schemas/AttendanceRecord"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid request parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance/history": {
+      "get": {
+        "summary": "Get Attendance History",
+        "description": "Queries logs and counts (Present, Late, Absent) filtered by month.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$",
+              "example": "2026-06"
+            },
+            "description": "Target month in YYYY-MM format. Defaults to current month."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Monthly logs and stats compiled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presentCount": {
+                      "type": "integer",
+                      "example": 14
+                    },
+                    "lateCount": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "absentCount": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AttendanceRecord"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance/bulk-sync": {
+      "post": {
+        "summary": "Sync Offline Attendance Logs",
+        "description": "Uploads a list of attendance actions collected locally on the device while offline.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AttendanceRecord"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Offline queues successfully merged into database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "syncedCount": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload list structure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "EMP001"
+          },
+          "employeeName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "employeeCode": {
+            "type": "string",
+            "example": "GT-2026-0042"
+          },
+          "designation": {
+            "type": "string",
+            "example": "Senior Sustainability Consultant"
+          },
+          "department": {
+            "type": "string",
+            "example": "Environmental Compliance"
+          },
+          "organization": {
+            "type": "string",
+            "example": "GreenTrack Technologies Inc."
+          },
+          "email": {
+            "type": "string",
+            "example": "johntom@gmail.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+1 (555) 234-5678"
+          },
+          "profilePicture": {
+            "type": "string",
+            "example": "data:image/svg+xml;utf8,...",
+            "description": "Base64 profile graphic data string."
+          }
+        }
+      },
+      "Geofence": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "example": 37.7749
+          },
+          "longitude": {
+            "type": "number",
+            "example": -122.4194
+          },
+          "radiusMeters": {
+            "type": "number",
+            "example": 200
+          }
+        }
+      },
+      "AttendanceConfig": {
+        "type": "object",
+        "properties": {
+          "shiftTime": {
+            "type": "string",
+            "example": "09:00 AM - 06:00 PM"
+          },
+          "allowedGeofence": {
+            "$ref": "#/components/schemas/Geofence"
+          },
+          "wifiSSID": {
+            "type": "string",
+            "example": "GreenTrack_HQ_WiFi"
+          },
+          "gpsAccuracyThresholdMeters": {
+            "type": "number",
+            "example": 50
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "example": 37.77495
+          },
+          "longitude": {
+            "type": "number",
+            "example": -122.41942
+          },
+          "accuracy": {
+            "type": "number",
+            "example": 12
+          }
+        }
+      },
+      "AttendanceRecord": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "example": "2026-06-17"
+          },
+          "shiftTime": {
+            "type": "string",
+            "example": "09:00 AM - 06:00 PM"
+          },
+          "checkInTime": {
+            "type": "string",
+            "nullable": true,
+            "example": "09:05 AM"
+          },
+          "checkOutTime": {
+            "type": "string",
+            "nullable": true,
+            "example": "06:02 PM"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Present",
+              "Present (Late Check-in)",
+              "Absent",
+              "Half Day",
+              "On Leave",
+              "Weekly Off"
+            ],
+            "example": "Present"
+          },
+          "checkInSelfie": {
+            "type": "string",
+            "nullable": true,
+            "example": "data:image/jpeg;base64,iVBORw..."
+          },
+          "checkOutSelfie": {
+            "type": "string",
+            "nullable": true,
+            "example": "data:image/jpeg;base64,fJS891..."
+          },
+          "checkInLocation": {
+            "$ref": "#/components/schemas/Location",
+            "nullable": true
+          },
+          "checkOutLocation": {
+            "$ref": "#/components/schemas/Location",
+            "nullable": true
+          },
+          "checkInGpsStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "success",
+              "failed"
+            ],
+            "example": "success"
+          },
+          "checkOutGpsStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "success",
+              "failed"
+            ],
+            "example": "success"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized access. Please login."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GreenTrack ERP - Attendance Configuration API",
+    "description": "OpenAPI specification for fetching geofences, wifi thresholds, and shift configurations.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/attendance/config": {
+      "get": {
+        "summary": "Get Attendance Configuration",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration loaded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceConfig"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Geofence": {
+        "type": "object",
+        "properties": {
+          "latitude": { "type": "number", "example": 37.7749 },
+          "longitude": { "type": "number", "example": -122.4194 },
+          "radiusMeters": { "type": "number", "example": 200 }
+        }
+      },
+      "AttendanceConfig": {
+        "type": "object",
+        "properties": {
+          "shiftTime": { "type": "string", "example": "09:00 AM - 06:00 PM" },
+          "allowedGeofence": { "$ref": "#/components/schemas/Geofence" },
+          "wifiSSID": { "type": "string", "example": "GreenTrack_HQ_WiFi" },
+          "gpsAccuracyThresholdMeters": { "type": "number", "example": 50 }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+        }
+      }
+    }
+  }
+}

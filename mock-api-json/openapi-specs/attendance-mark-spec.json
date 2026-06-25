@@ -1,0 +1,126 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GreenTrack ERP - Mark Attendance API",
+    "description": "OpenAPI specification for checking in and checking out actions.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/attendance/mark": {
+      "post": {
+        "summary": "Mark Attendance",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "timestamp",
+                  "location",
+                  "gpsStatus"
+                ],
+                "properties": {
+                  "type": { "type": "string", "enum": ["check_in", "check_out"], "example": "check_in" },
+                  "timestamp": { "type": "string", "format": "date-time", "example": "2026-06-17T09:05:00Z" },
+                  "selfie": { "type": "string", "nullable": true, "example": "data:image/jpeg;base64,..." },
+                  "location": { "$ref": "#/components/schemas/Location" },
+                  "gpsStatus": { "type": "string", "enum": ["success", "failed"], "example": "success" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Marked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Check-in recorded successfully at 09:05 AM." },
+                    "record": { "$ref": "#/components/schemas/AttendanceRecord" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Location": {
+        "type": "object",
+        "properties": {
+          "latitude": { "type": "number", "example": 37.77495 },
+          "longitude": { "type": "number", "example": -122.41942 },
+          "accuracy": { "type": "number", "example": 12 }
+        }
+      },
+      "AttendanceRecord": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "example": "2026-06-17" },
+          "shiftTime": { "type": "string", "example": "09:00 AM - 06:00 PM" },
+          "checkInTime": { "type": "string", "nullable": true, "example": "09:05 AM" },
+          "checkOutTime": { "type": "string", "nullable": true, "example": null },
+          "status": { "type": "string", "example": "Present (Late Check-in)" },
+          "checkInSelfie": { "type": "string", "nullable": true, "example": "data:image/jpeg;base64,..." },
+          "checkOutSelfie": { "type": "string", "nullable": true, "example": null },
+          "checkInLocation": { "$ref": "#/components/schemas/Location", "nullable": true },
+          "checkOutLocation": { "$ref": "#/components/schemas/Location", "nullable": true },
+          "checkInGpsStatus": { "type": "string", "nullable": true, "example": "success" },
+          "checkOutGpsStatus": { "type": "string", "nullable": true, "example": null }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GreenTrack ERP - User Details API",
+    "description": "OpenAPI specification for fetching profile details.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "get": {
+        "summary": "Get User Profile Details",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile details retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "EMP001" },
+          "employeeName": { "type": "string", "example": "Thomas John" },
+          "employeeCode": { "type": "string", "example": "GT-2026-0042" },
+          "designation": { "type": "string", "example": "Senior Sustainability Consultant" },
+          "department": { "type": "string", "example": "Environmental Compliance" },
+          "organization": { "type": "string", "example": "GreenTrack Technologies Inc." },
+          "email": { "type": "string", "example": "thomasjohn@gmail.com" },
+          "phoneNumber": { "type": "string", "example": "+919847112233" },
+          "profilePicture": { "type": "string", "example": "data:image/svg+xml;utf8,..." }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+        }
+      }
+    }
+  }
+}

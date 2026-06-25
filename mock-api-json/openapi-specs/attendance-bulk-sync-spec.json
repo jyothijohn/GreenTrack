@@ -1,0 +1,115 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GreenTrack ERP - Sync Offline Attendance API",
+    "description": "OpenAPI specification for uploading batch offline check-in logs.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/attendance/bulk-sync": {
+      "post": {
+        "summary": "Sync Offline Attendance",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AttendanceRecord"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Synced successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "syncedCount": { "type": "integer", "example": 1 }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Location": {
+        "type": "object",
+        "properties": {
+          "latitude": { "type": "number", "example": 37.77495 },
+          "longitude": { "type": "number", "example": -122.41942 },
+          "accuracy": { "type": "number", "example": 12 }
+        }
+      },
+      "AttendanceRecord": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "example": "2026-06-17" },
+          "shiftTime": { "type": "string", "example": "09:00 AM - 06:00 PM" },
+          "checkInTime": { "type": "string", "nullable": true, "example": "09:05 AM" },
+          "checkOutTime": { "type": "string", "nullable": true, "example": "06:02 PM" },
+          "status": { "type": "string", "example": "Present" },
+          "checkInSelfie": { "type": "string", "nullable": true, "example": "data:image/jpeg;base64,..." },
+          "checkOutSelfie": { "type": "string", "nullable": true, "example": "data:image/jpeg;base64,..." },
+          "checkInLocation": { "$ref": "#/components/schemas/Location", "nullable": true },
+          "checkOutLocation": { "$ref": "#/components/schemas/Location", "nullable": true },
+          "checkInGpsStatus": { "type": "string", "nullable": true, "example": "success" },
+          "checkOutGpsStatus": { "type": "string", "nullable": true, "example": "success" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+        }
+      }
+    }
+  }
+}
