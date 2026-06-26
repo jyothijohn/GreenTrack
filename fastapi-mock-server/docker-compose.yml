@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  greentrack-mock:
+    image: jyothijohn/greentrack-app-mock-api:latest
+    container_name: greentrack-mock
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
