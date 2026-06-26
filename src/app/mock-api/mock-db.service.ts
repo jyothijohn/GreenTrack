@@ -37,9 +37,8 @@ export class MockDbService {
   }
 
   // Authentication
-  login(usernameOrEmail: string, passwordSecret: string): { success: boolean; token?: string; user?: UserProfile; error?: string } {
+  login(usernameOrEmail: string, passwordSecret: string): { success: boolean; token?: string; user?: UserProfile; message?: string } {
     const user = this.getUserDetails();
-    // In our mock, accept the seeded user email or code, with password 'password123'
     const normalizedInput = usernameOrEmail.trim().toLowerCase();
     const isUserMatch = normalizedInput === user.email.toLowerCase() || normalizedInput === user.employeeCode.toLowerCase();
     
@@ -48,6 +47,7 @@ export class MockDbService {
       localStorage.setItem(this.TOKEN_KEY, mockToken);
       return {
         success: true,
+        message: 'Login successful.',
         token: mockToken,
         user
       };
@@ -55,7 +55,7 @@ export class MockDbService {
     
     return {
       success: false,
-      error: 'Invalid email/username or password. Hint: Use johntom@gmail.com and password123'
+      message: 'Invalid username or password.'
     };
   }
 

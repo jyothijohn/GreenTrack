@@ -19,7 +19,6 @@ export interface Geofence {
 export interface AttendanceConfig {
   shiftTime: string;
   allowedGeofence: Geofence;
-  wifiSSID: string;
   gpsAccuracyThresholdMeters: number;
 }
 
@@ -45,14 +44,14 @@ export interface AttendanceRecord {
 
 export const INITIAL_USER: UserProfile = {
   id: 'EMP001',
-  employeeName: 'John Doe',
-  employeeCode: 'GT-2026-0042',
-  designation: 'Senior Sustainability Consultant',
-  department: 'Environmental Compliance',
-  organization: 'GreenTrack Technologies Inc.',
-  email: 'johntom@gmail.com',
-  phoneNumber: '+1 (555) 234-5678',
-  profilePicture: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100%" height="100%" fill="%234A5568"/><circle cx="50" cy="35" r="20" fill="%23EDF2F7"/><path d="M20 85c0-15 10-25 30-25s30 10 30 25z" fill="%23EDF2F7"/><text x="50" y="92" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="%23A0AEC0" text-anchor="middle">EMP001</text></svg>`
+  employeeName: 'Thomas John',
+  employeeCode: 'GC-2026-0001',
+  designation: 'Field Worker',
+  department: 'Operations',
+  organization: 'Green Care',
+  email: 'thomasjohn@greencare.com',
+  phoneNumber: '+91-9847112233',
+  profilePicture: 'https://example.com/images/employees/EMP001.jpg'
 };
 
 export const ATTENDANCE_CONFIG: AttendanceConfig = {
@@ -62,7 +61,6 @@ export const ATTENDANCE_CONFIG: AttendanceConfig = {
     longitude: -122.4194,
     radiusMeters: 200
   },
-  wifiSSID: 'GreenTrack_HQ_WiFi',
   gpsAccuracyThresholdMeters: 50
 };
 

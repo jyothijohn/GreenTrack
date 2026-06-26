@@ -34,7 +34,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     const err = new HttpErrorResponse({
       status,
       statusText: status === 401 ? 'Unauthorized' : (status === 400 ? 'Bad Request' : 'Not Found'),
-      error: { message },
+      error: { success: false, message },
       url: req.url
     });
     
@@ -64,7 +64,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     if (loginResult.success) {
       return makeOk(loginResult);
     } else {
-      return makeError(401, loginResult.error || 'Invalid credentials');
+      return makeError(401, loginResult.message || 'Invalid credentials');
     }
   }
 

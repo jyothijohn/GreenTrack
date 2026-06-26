@@ -79,8 +79,19 @@
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
-          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Unauthorized access. Please login."
+          }
         }
       }
     }

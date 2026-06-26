@@ -15,7 +15,7 @@
     "/login": {
       "post": {
         "summary": "Authenticate User",
-        "description": "Logs in the employee and returns a JWT session token and user details.",
+        "description": "Authenticates an employee using their username and password and returns a JWT token along with the employee profile.",
         "requestBody": {
           "required": true,
           "content": {
@@ -29,11 +29,12 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "johntom@gmail.com",
+                    "example": "thomasjohn@greencare.com",
                     "description": "Employee email address or username code."
                   },
                   "password": {
                     "type": "string",
+                    "format": "password",
                     "example": "password123",
                     "description": "User password."
                   }
@@ -44,7 +45,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful authentication.",
+            "description": "Login successful.",
             "content": {
               "application/json": {
                 "schema": {
@@ -53,6 +54,10 @@
                     "success": {
                       "type": "boolean",
                       "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful."
                     },
                     "token": {
                       "type": "string",
@@ -67,7 +72,7 @@
             }
           },
           "401": {
-            "description": "Invalid credentials.",
+            "description": "Invalid username or password.",
             "content": {
               "application/json": {
                 "schema": {
@@ -81,8 +86,8 @@
     },
     "/user": {
       "get": {
-        "summary": "Get User Profile Details",
-        "description": "Fetches profile information for the authenticated employee.",
+        "summary": "Get User Profile",
+        "description": "Returns the profile details of the authenticated employee.",
         "security": [
           {
             "BearerAuth": []
@@ -90,7 +95,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Profile retrieved successfully.",
+            "description": "User profile retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -427,6 +432,16 @@
     "schemas": {
       "UserProfile": {
         "type": "object",
+        "required": [
+          "id",
+          "employeeName",
+          "employeeCode",
+          "designation",
+          "department",
+          "organization",
+          "email",
+          "phoneNumber"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -434,36 +449,38 @@
           },
           "employeeName": {
             "type": "string",
-            "example": "John Doe"
+            "example": "Thomas John"
           },
           "employeeCode": {
             "type": "string",
-            "example": "GT-2026-0042"
+            "example": "GC-2026-0001"
           },
           "designation": {
             "type": "string",
-            "example": "Senior Sustainability Consultant"
+            "example": "Field Worker"
           },
           "department": {
             "type": "string",
-            "example": "Environmental Compliance"
+            "example": "Operations"
           },
           "organization": {
             "type": "string",
-            "example": "GreenTrack Technologies Inc."
+            "example": "Green Care"
           },
           "email": {
             "type": "string",
-            "example": "johntom@gmail.com"
+            "format": "email",
+            "example": "thomasjohn@greencare.com"
           },
           "phoneNumber": {
             "type": "string",
-            "example": "+1 (555) 234-5678"
+            "example": "+91-9847112233"
           },
           "profilePicture": {
             "type": "string",
-            "example": "data:image/svg+xml;utf8,...",
-            "description": "Base64 profile graphic data string."
+            "format": "uri",
+            "nullable": true,
+            "example": "https://example.com/images/employees/EMP001.jpg"
           }
         }
       },
@@ -493,10 +510,6 @@
           },
           "allowedGeofence": {
             "$ref": "#/components/schemas/Geofence"
-          },
-          "wifiSSID": {
-            "type": "string",
-            "example": "GreenTrack_HQ_WiFi"
           },
           "gpsAccuracyThresholdMeters": {
             "type": "number",
@@ -595,7 +608,15 @@
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
           "message": {
             "type": "string",
             "example": "Unauthorized access. Please login."

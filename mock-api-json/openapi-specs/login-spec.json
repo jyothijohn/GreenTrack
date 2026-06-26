@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "GreenTrack ERP - Login API",
-    "description": "OpenAPI specification for the authentication endpoint.",
+    "description": "OpenAPI specification for the GreenTrack Mobile Application authentication endpoint.",
     "version": "1.0.0"
   },
   "servers": [
@@ -14,7 +14,7 @@
     "/login": {
       "post": {
         "summary": "Authenticate User",
-        "description": "Logs in the employee and returns a JWT session token and user details.",
+        "description": "Authenticates an employee using their username and password and returns a JWT token along with the employee profile.",
         "requestBody": {
           "required": true,
           "content": {
@@ -28,10 +28,11 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "thomasjohn@gmail.com"
+                    "example": "thomasjohn@greencare.com"
                   },
                   "password": {
                     "type": "string",
+                    "format": "password",
                     "example": "password123"
                   }
                 }
@@ -41,7 +42,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful login.",
+            "description": "Login successful.",
             "content": {
               "application/json": {
                 "schema": {
@@ -50,6 +51,10 @@
                     "success": {
                       "type": "boolean",
                       "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful."
                     },
                     "token": {
                       "type": "string",
@@ -64,7 +69,7 @@
             }
           },
           "401": {
-            "description": "Invalid credentials.",
+            "description": "Invalid username or password.",
             "content": {
               "application/json": {
                 "schema": {
@@ -82,21 +87,57 @@
       "UserProfile": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "example": "EMP001" },
-          "employeeName": { "type": "string", "example": "Thomas John" },
-          "employeeCode": { "type": "string", "example": "GT-2026-0042" },
-          "designation": { "type": "string", "example": "Senior Sustainability Consultant" },
-          "department": { "type": "string", "example": "Environmental Compliance" },
-          "organization": { "type": "string", "example": "GreenTrack Technologies Inc." },
-          "email": { "type": "string", "example": "thomasjohn@gmail.com" },
-          "phoneNumber": { "type": "string", "example": "+91-9847112233" },
-          "profilePicture": { "type": "string", "example": "data:image/svg+xml;utf8,..." }
+          "id": {
+            "type": "string",
+            "example": "EMP001"
+          },
+          "employeeCode": {
+            "type": "string",
+            "example": "GC-2026-0001"
+          },
+          "employeeName": {
+            "type": "string",
+            "example": "Thomas John"
+          },
+          "designation": {
+            "type": "string",
+            "example": "Field Worker"
+          },
+          "department": {
+            "type": "string",
+            "example": "Operations"
+          },
+          "organization": {
+            "type": "string",
+            "example": "Green Care"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "thomasjohn@greencare.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+91-9847112233"
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/profile/thomasjohn.jpg"
+          }
         }
       },
       "ErrorResponse": {
         "type": "object",
         "properties": {
-          "message": { "type": "string", "example": "Invalid email/username or password." }
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid username or password."
+          }
         }
       }
     }

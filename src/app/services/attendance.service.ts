@@ -9,7 +9,7 @@ import { AttendanceConfig, AttendanceRecord, Location } from '../mock-api/mock-d
 export class AttendanceService {
   private http = inject(HttpClient);
 
-  // Get configuration settings (shift info, geofences, wifiSSID, threshold etc)
+  // Get configuration settings (shift info, geofences, accuracy threshold etc)
   getConfig(): Observable<AttendanceConfig> {
     return this.http.get<AttendanceConfig>('/api/attendance/config');
   }

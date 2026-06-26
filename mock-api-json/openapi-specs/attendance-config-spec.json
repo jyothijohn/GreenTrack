@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "GreenTrack ERP - Attendance Configuration API",
-    "description": "OpenAPI specification for fetching geofences, wifi thresholds, and shift configurations.",
+    "description": "OpenAPI specification for fetching geofences and shift configurations.",
     "version": "1.0.0"
   },
   "servers": [
@@ -66,14 +66,24 @@
         "properties": {
           "shiftTime": { "type": "string", "example": "09:00 AM - 06:00 PM" },
           "allowedGeofence": { "$ref": "#/components/schemas/Geofence" },
-          "wifiSSID": { "type": "string", "example": "GreenTrack_HQ_WiFi" },
           "gpsAccuracyThresholdMeters": { "type": "number", "example": 50 }
         }
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
-          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Unauthorized access. Please login."
+          }
         }
       }
     }

@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "GreenTrack ERP - User Details API",
-    "description": "OpenAPI specification for fetching profile details.",
+    "description": "OpenAPI specification for retrieving the logged-in employee's profile details.",
     "version": "1.0.0"
   },
   "servers": [
@@ -13,7 +13,8 @@
   "paths": {
     "/user": {
       "get": {
-        "summary": "Get User Profile Details",
+        "summary": "Get User Profile",
+        "description": "Returns the profile details of the authenticated employee.",
         "security": [
           {
             "BearerAuth": []
@@ -21,7 +22,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Profile details retrieved successfully.",
+            "description": "User profile retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -55,22 +56,73 @@
     "schemas": {
       "UserProfile": {
         "type": "object",
+        "required": [
+          "id",
+          "employeeName",
+          "employeeCode",
+          "designation",
+          "department",
+          "organization",
+          "email",
+          "phoneNumber"
+        ],
         "properties": {
-          "id": { "type": "string", "example": "EMP001" },
-          "employeeName": { "type": "string", "example": "Thomas John" },
-          "employeeCode": { "type": "string", "example": "GT-2026-0042" },
-          "designation": { "type": "string", "example": "Senior Sustainability Consultant" },
-          "department": { "type": "string", "example": "Environmental Compliance" },
-          "organization": { "type": "string", "example": "GreenTrack Technologies Inc." },
-          "email": { "type": "string", "example": "thomasjohn@gmail.com" },
-          "phoneNumber": { "type": "string", "example": "+919847112233" },
-          "profilePicture": { "type": "string", "example": "data:image/svg+xml;utf8,..." }
+          "id": {
+            "type": "string",
+            "example": "EMP001"
+          },
+          "employeeName": {
+            "type": "string",
+            "example": "Thomas John"
+          },
+          "employeeCode": {
+            "type": "string",
+            "example": "GC-2026-0001"
+          },
+          "designation": {
+            "type": "string",
+            "example": "Field Worker"
+          },
+          "department": {
+            "type": "string",
+            "example": "Operations"
+          },
+          "organization": {
+            "type": "string",
+            "example": "Green Care"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "thomasjohn@greencare.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+91-9847112233"
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://example.com/images/employees/EMP001.jpg"
+          }
         }
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
-          "message": { "type": "string", "example": "Unauthorized access. Please login." }
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Unauthorized access. Please login."
+          }
         }
       }
     }
